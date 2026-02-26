@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G.works 定期オファーCSV生成</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif; background: #f1f5f9; color: #1e293b; font-size: 14px; }
+
+  header {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .header-icon { background: #f97316; border-radius: 10px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .header-title { color: #fff; font-weight: 800; font-size: 17px; }
+  .header-sub { color: #475569; font-size: 11px; margin-top: 2px; }
+  #badge-count { background: rgba(249,115,22,0.15); border: 1px solid rgba(249,115,22,0.3); border-radius: 8px; padding: 7px 14px; color: #fb923c; font-size: 13px; font-weight: 700; display: none; }
+  #btn-download { padding: 10px 24px; background: linear-gradient(135deg, #f97316, #ea580c); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 14px; font-family: inherit; box-shadow: 0 4px 12px rgba(249,115,22,0.4); transition: opacity 0.15s; }
+  #btn-download:hover { opacity: 0.88; }
+
+  .main { max-width: 1100px; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 1fr 300px; gap: 16px; }
+
+  .card { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 14px; }
+  .card-header { padding: 11px 16px; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 13px; border-bottom: 2px solid; }
+  .card-header.orange { background: linear-gradient(135deg, #fff7ed, #fffbf5); border-color: #fed7aa; color: #ea580c; }
+  .card-header.purple { background: linear-gradient(135deg, #eef2ff, #f5f3ff); border-color: #c7d2fe; color: #4f46e5; }
+  .card-header.green  { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-color: #bbf7d0; color: #16a34a; }
+  .card-body { padding: 14px 16px; }
+
+  .field label { font-size: 11px; font-weight: 700; color: #64748b; display: block; margin-bottom: 4px; }
+  input[type=text], input[type=number], input[type=time], select {
+    width: 100%; padding: 8px 10px; border: 1.5px solid #e2e8f0; border-radius: 7px;
+    font-size: 13px; font-family: inherit; background: #fff; color: #1e293b; outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  input:focus, select:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+
+  /* ストップカード */
+  .stop-card { border-radius: 8px; padding: 12px 14px; border-left: 4px solid; }
+  .stop-card.pickup   { background: #fff8f0; border-color: #f97316; }
+  .stop-card.delivery { background: #eff6ff; border-color: #3b82f6; }
+  .stop-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .stop-badge { padding: 3px 10px; border-radius: 5px; color: #fff; font-weight: 800; font-size: 12px; font-family: monospace; letter-spacing: 1px; }
+  .stop-badge.p { background: #f97316; }
+  .stop-badge.d { background: #3b82f6; }
+  .stop-index { font-size: 12px; color: #64748b; font-weight: 600; }
+  .btn-remove-stop { margin-left: auto; padding: 3px 10px; background: #fee2e2; color: #ef4444; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: 600; font-family: inherit; }
+  .stop-row1 { display: grid; grid-template-columns: 1fr 120px; gap: 10px; margin-bottom: 10px; }
+  .stop-row2 { display: grid; grid-template-columns: 1fr 1fr 90px 90px 120px; gap: 10px; align-items: end; }
+  .stop-row3 { margin-top: 10px; }
+  .checkbox-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #64748b; font-weight: 600; }
+  .checkbox-label input[type=checkbox] { accent-color: #f97316; width: 16px; height: 16px; }
+
+  /* 挿入ボタン行 */
+  .insert-row { display: flex; align-items: center; padding: 5px 0; position: relative; }
+  .insert-row::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: #e2e8f0; }
+  .insert-btns { display: flex; gap: 6px; background: #f1f5f9; padding: 2px 10px; border-radius: 20px; position: relative; z-index: 1; margin: 0 auto; }
+  .btn-ins { padding: 4px 14px; border-radius: 20px; cursor: pointer; font-weight: 700; font-size: 11px; font-family: inherit; border: 1.5px solid; transition: opacity 0.12s; }
+  .btn-ins:hover { opacity: 0.72; }
+  .btn-ins-p { color: #f97316; border-color: #f97316; background: #fff7ed; }
+  .btn-ins-d { color: #3b82f6; border-color: #3b82f6; background: #eff6ff; }
+
+  /* カレンダー */
+  .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .cal-nav-btn { background: #f1f5f9; border: none; border-radius: 8px; width: 30px; height: 30px; cursor: pointer; font-size: 18px; color: #64748b; }
+  .cal-month-label { font-weight: 800; font-size: 15px; color: #1e293b; }
+  .cal-weekdays { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; margin-bottom: 4px; }
+  .cal-wd { text-align: center; font-size: 11px; font-weight: 700; padding: 3px 0; }
+  .cal-wd.sun { color: #ef4444; } .cal-wd.sat { color: #3b82f6; } .cal-wd.wkd { color: #64748b; }
+  .cal-days { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; }
+  .cal-day { padding: 7px 2px; border: 2px solid transparent; border-radius: 7px; background: #fff; cursor: pointer; font-size: 13px; font-family: inherit; text-align: center; transition: all 0.1s; }
+  .cal-day:hover { border-color: #fdba74; }
+  .cal-day.selected { background: #f97316 !important; color: #fff !important; font-weight: 800; border-color: #f97316 !important; }
+  .cal-day.today { border-color: #94a3b8; }
+  .cal-day.sun { color: #ef4444; } .cal-day.sat { color: #3b82f6; }
+  .cal-day.empty { background: transparent; cursor: default; border: none; }
+  .cal-day.past { background: #f8fafc; color: #cbd5e1 !important; cursor: not-allowed; border-color: transparent !important; }
+  .cal-quick { display: flex; gap: 6px; margin-top: 10px; }
+  .btn-quick { flex: 1; padding: 6px; font-size: 11px; font-weight: 600; background: transparent; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; color: #64748b; font-family: inherit; }
+  .btn-quick-clear { border-color: #fecaca; color: #ef4444; }
+
+  .date-list { max-height: 200px; overflow-y: auto; }
+  .date-item { display: flex; align-items: center; justify-content: space-between; padding: 5px 14px; font-size: 12px; border-bottom: 1px solid #f8fafc; }
+  .btn-remove-date { border: none; background: transparent; cursor: pointer; color: #ef4444; font-size: 15px; padding: 0 4px; }
+  .date-list-header { padding: 9px 14px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; }
+  .btn-clear-all { padding: 3px 10px; background: transparent; border: 1px solid #fecaca; border-radius: 5px; cursor: pointer; color: #ef4444; font-size: 11px; font-weight: 600; font-family: inherit; }
+
+  @media (max-width: 768px) {
+    .main { grid-template-columns: 1fr; }
+    .stop-row2 { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="header-icon">🔄</div>
+    <div>
+      <div class="header-title">G.works 定期オファーCSV生成</div>
+      <div class="header-sub">テンプレートを作成 → 日付を選択 → CSVダウンロード</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <div id="badge-count">📅 <span id="count-num">0</span>日選択中</div>
+    <button id="btn-download" onclick="downloadCSV()">⬇ CSVダウンロード</button>
+  </div>
+</header>
+
+<div class="main">
+  <div>
+    <!-- 備考 -->
+    <div class="card">
+      <div class="card-header orange">📝 備考（共通）</div>
+      <div class="card-body">
+        <div class="field">
+          <label>備考</label>
+          <input type="text" id="offer-memo" placeholder="配送時の注意事項、軒先情報、必要器具など">
+        </div>
+      </div>
+    </div>
+
+    <!-- 集荷・配送先 -->
+    <div class="card">
+      <div class="card-header purple">
+        🗺 集荷・配送先
+        <button onclick="clearTemplate()" style="margin-left:auto;padding:4px 12px;background:#fee2e2;color:#ef4444;border:1px solid #fecaca;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">テンプレートをクリア</button>
+      </div>
+      <div class="card-body">
+        <div id="stops-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <div class="card-header green">📅 実施日を選択（複数可）</div>
+      <div class="card-body" id="calendar-root"></div>
+    </div>
+    <div class="card" id="date-list-card" style="display:none">
+      <div class="date-list-header">
+        <span style="font-weight:700;font-size:13px;color:#1e293b">選択中 (<span id="selected-count">0</span>件)</span>
+        <button class="btn-clear-all" onclick="clearAllDates()">全クリア</button>
+      </div>
+      <div class="date-list" id="date-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const WEEKDAYS = ['日','月','火','水','木','金','土'];
+const 荷役_P   = ['無し','手積み','フォークリフト'];
+const 荷役_D   = ['無し','手卸し','フォークリフト'];
+const 荷姿LIST  = ['パレット','バラ','その他'];
+
+let stops = [];
+let selectedDates = [];
+let stopIdCounter = 0;
+let calYear, calMonth;
+
+function pad2(n) { return String(n).padStart(2,'0'); }
+function dateKey(y,m,d) { return `${y}-${pad2(m)}-${pad2(d)}`; }
+function daysInMonth(y,m) { return new Date(y,m,0).getDate(); }
+function firstDow(y,m) { return new Date(y,m-1,1).getDay(); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── ストップ ────────────────────────────────────────
+
+function makeStop(type) {
+  return { id: ++stopIdCounter, type, name:'', time: type==='P' ? '09:00' : '14:00', kareki:'無し', kadogu:'パレット', hikitori:false, weight:'', vol:'', code:'' };
+}
+
+function addStop(type, afterIndex) {
+  const s = makeStop(type);
+  if (afterIndex === undefined || afterIndex >= stops.length) stops.push(s);
+  else stops.splice(afterIndex + 1, 0, s);
+  renderStops();
+  saveToStorage();
+}
+
+function removeStop(id) {
+  if (stops.length <= 2) { alert('最低2件（集荷1・配送1）必要です'); return; }
+  stops = stops.filter(s => s.id !== id);
+  renderStops();
+  saveToStorage();
+}
+
+function updateStop(id, field, value) {
+  const s = stops.find(s => s.id === id);
+  if (s) { s[field] = value; saveToStorage(); }
+}
+
+function renderStops() {
+  const container = document.getElementById('stops-container');
+  container.innerHTML = '';
+
+  stops.forEach((s, idx) => {
+    const isP = s.type === 'P';
+    const 荷役opts = isP ? 荷役_P : 荷役_D;
+
+    // ストップカード
+    const card = document.createElement('div');
+    card.className = `stop-card ${isP ? 'pickup' : 'delivery'}`;
+    card.innerHTML = `
+      <div class="stop-header">
+        <span class="stop-badge ${isP?'p':'d'}">${isP ? '集荷 P' : '配送 D'}</span>
+        <span class="stop-index">${idx+1}ヶ所目</span>
+        <button class="btn-remove-stop" onclick="removeStop(${s.id})">削除</button>
+      </div>
+      <div class="stop-row1">
+        <div class="field">
+          <label>営業所名・会社名</label>
+          <input type="text" placeholder="例：しみず物流株式会社" value="${esc(s.name)}" oninput="updateStop(${s.id},'name',this.value)">
+        </div>
+        <div class="field">
+          <label>時刻</label>
+          <input type="time" value="${s.time}" oninput="updateStop(${s.id},'time',this.value)">
+        </div>
+      </div>
+      <div class="stop-row2">
+        <div class="field">
+          <label>荷役</label>
+          <select onchange="updateStop(${s.id},'kareki',this.value)">
+            ${荷役opts.map(o=>`<option${s.kareki===o?' selected':''}>${esc(o)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>荷姿</label>
+          <select onchange="updateStop(${s.id},'kadogu',this.value)">
+            ${荷姿LIST.map(o=>`<option${s.kadogu===o?' selected':''}>${esc(o)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>総重量 (kg)</label>
+          <input type="number" placeholder="0" value="${esc(s.weight)}" style="text-align:right" oninput="updateStop(${s.id},'weight',this.value)">
+        </div>
+        <div class="field">
+          <label>総立米 (m³)</label>
+          <input type="number" placeholder="0" value="${esc(s.vol)}" style="text-align:right" oninput="updateStop(${s.id},'vol',this.value)">
+        </div>
+        <div class="field">
+          <label>品番・コード</label>
+          <input type="text" placeholder="0001" value="${esc(s.code)}" oninput="updateStop(${s.id},'code',this.value)">
+        </div>
+      </div>
+      <div class="stop-row3">
+        <label class="checkbox-label">
+          <input type="checkbox" ${s.hikitori?'checked':''} onchange="updateStop(${s.id},'hikitori',this.checked)">
+          引取あり（集荷先へ持ち帰りがある場合）
+        </label>
+      </div>
+    `;
+    container.appendChild(card);
+
+    // カードの後に挿入ボタン行
+    const row = document.createElement('div');
+    row.className = 'insert-row';
+    row.innerHTML = `
+      <div class="insert-btns">
+        <button class="btn-ins btn-ins-p" onclick="addStop('P',${idx})">＋ 集荷先を追加</button>
+        <button class="btn-ins btn-ins-d" onclick="addStop('D',${idx})">＋ 配送先を追加</button>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+// ── カレンダー ──────────────────────────────────────
+
+function initCalendar() {
+  const t = new Date();
+  calYear = t.getFullYear(); calMonth = t.getMonth() + 1;
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const root = document.getElementById('calendar-root');
+  const days = daysInMonth(calYear, calMonth);
+  const first = firstDow(calYear, calMonth);
+  const t = new Date();
+  const todayKey = dateKey(t.getFullYear(), t.getMonth()+1, t.getDate());
+
+  let html = `
+    <div class="cal-nav">
+      <button class="cal-nav-btn" onclick="moveMonth(-1)">‹</button>
+      <span class="cal-month-label">${calYear}年 ${calMonth}月</span>
+      <button class="cal-nav-btn" onclick="moveMonth(1)">›</button>
+    </div>
+    <div class="cal-weekdays">
+      ${WEEKDAYS.map((w,i)=>`<div class="cal-wd ${i===0?'sun':i===6?'sat':'wkd'}">${w}</div>`).join('')}
+    </div>
+    <div class="cal-days">
+  `;
+  for (let i=0; i<first; i++) html += `<div class="cal-day empty"></div>`;
+  for (let d=1; d<=days; d++) {
+    const key = dateKey(calYear, calMonth, d);
+    const dow = (first + d - 1) % 7;
+    const isPast = key < todayKey;
+    let cls = 'cal-day';
+    if (isPast) {
+      cls += ' past';
+      html += `<button class="${cls}" disabled>${d}</button>`;
+    } else {
+      if (selectedDates.includes(key)) cls += ' selected';
+      if (dow === 0) cls += ' sun';
+      if (dow === 6) cls += ' sat';
+      html += `<button class="${cls}" onclick="toggleDate('${key}')">${d}</button>`;
+    }
+  }
+  html += `</div>
+    <div class="cal-quick">
+      <button class="btn-quick" onclick="selectWeekdays()">平日すべて選択</button>
+      <button class="btn-quick btn-quick-clear" onclick="clearMonth()">この月をクリア</button>
+    </div>`;
+  root.innerHTML = html;
+}
+
+function moveMonth(delta) {
+  calMonth += delta;
+  if (calMonth > 12) { calMonth=1; calYear++; }
+  if (calMonth < 1)  { calMonth=12; calYear--; }
+  renderCalendar();
+}
+
+function toggleDate(key) {
+  const idx = selectedDates.indexOf(key);
+  if (idx >= 0) selectedDates.splice(idx, 1); else selectedDates.push(key);
+  selectedDates.sort();
+  renderCalendar(); renderDateList(); updateBadge();
+}
+
+function selectWeekdays() {
+  const t = new Date();
+  const todayKey = dateKey(t.getFullYear(), t.getMonth()+1, t.getDate());
+  const days = daysInMonth(calYear, calMonth);
+  const first = firstDow(calYear, calMonth);
+  for (let d=1; d<=days; d++) {
+    const dow = (first+d-1)%7;
+    const k = dateKey(calYear,calMonth,d);
+    if (dow!==0 && dow!==6 && k >= todayKey && !selectedDates.includes(k)) selectedDates.push(k);
+  }
+  selectedDates.sort(); renderCalendar(); renderDateList(); updateBadge();
+}
+
+function clearMonth() {
+  const days = daysInMonth(calYear, calMonth);
+  for (let d=1; d<=days; d++) selectedDates = selectedDates.filter(k => k !== dateKey(calYear,calMonth,d));
+  renderCalendar(); renderDateList(); updateBadge();
+}
+
+function clearAllDates() { selectedDates=[]; renderCalendar(); renderDateList(); updateBadge(); }
+
+function renderDateList() {
+  const card = document.getElementById('date-list-card');
+  document.getElementById('selected-count').textContent = selectedDates.length;
+  if (!selectedDates.length) { card.style.display='none'; return; }
+  card.style.display = 'block';
+  document.getElementById('date-list').innerHTML = selectedDates.map(d => {
+    const [y,m,day] = d.split('-');
+    const dow = new Date(+y,+m-1,+day).getDay();
+    const col = dow===0?'#ef4444':dow===6?'#3b82f6':'#374151';
+    return `<div class="date-item">
+      <span style="color:${col}">${y}/${pad2(+m)}/${pad2(+day)} (${WEEKDAYS[dow]})</span>
+      <button class="btn-remove-date" onclick="toggleDate('${d}')">×</button>
+    </div>`;
+  }).join('');
+}
+
+function updateBadge() {
+  document.getElementById('count-num').textContent = selectedDates.length;
+  document.getElementById('badge-count').style.display = selectedDates.length ? 'block' : 'none';
+}
+
+// ── CSV ─────────────────────────────────────────────
+
+function buildDT(dateStr, timeStr) {
+  if (!dateStr || !timeStr) return '';
+  const [y,mo,d] = dateStr.split('-'); const [h,mi] = timeStr.split(':');
+  return `${y}/${parseInt(mo)}/${parseInt(d)} ${pad2(parseInt(h))}:${mi}`;
+}
+
+function csvCell(v) {
+  const s = String(v??'');
+  return (s.includes(',')||s.includes('"')||s.includes('\n')) ? `"${s.replace(/"/g,'""')}"` : s;
+}
+
+function downloadCSV() {
+  if (!selectedDates.length) { alert('日付を1日以上選択してください'); return; }
+  const memo = document.getElementById('offer-memo').value;
+  const rows = [['No','備考','集荷/配送','集荷配送先営業所名','集荷配送日時','荷役','荷姿','引取','総重量','総立米','品番・コード']];
+
+  selectedDates.forEach((dateStr, i) => {
+    stops.forEach((s, si) => {
+      rows.push([
+        si===0 ? i+1 : '',
+        si===0 ? memo : '',
+        s.type, s.name,
+        buildDT(dateStr, s.time),
+        s.kareki, s.kadogu,
+        s.hikitori ? '有り' : '',
+        s.weight, s.vol, s.code,
+      ]);
+    });
+  });
+
+  const csv = '\uFEFF' + rows.map(r=>r.map(csvCell).join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+  a.download = `gworks_offer_${new Date().toISOString().slice(0,10).replace(/-/g,'')}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+// ── localStorage 保存・読み込み ──────────────────────
+
+function clearTemplate() {
+  if (!confirm('集荷・配送先の入力内容をすべてクリアします。よろしいですか？')) return;
+  stops = [];
+  stopIdCounter = 0;
+  addStop('P');
+  addStop('D');
+  localStorage.removeItem('gworks_offer_template');
+}
+
+function saveToStorage() {
+  const data = {
+    memo: document.getElementById('offer-memo').value,
+    stops: stops.map(s => ({
+      type: s.type, name: s.name, time: s.time,
+      kareki: s.kareki, kadogu: s.kadogu, hikitori: s.hikitori,
+      weight: s.weight, vol: s.vol, code: s.code,
+    }))
+  };
+  localStorage.setItem('gworks_offer_template', JSON.stringify(data));
+}
+
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem('gworks_offer_template');
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (data.memo) document.getElementById('offer-memo').value = data.memo;
+    if (data.stops && data.stops.length >= 2) {
+      stops = [];
+      data.stops.forEach(s => {
+        stops.push({ id: ++stopIdCounter, type: s.type, name: s.name, time: s.time,
+          kareki: s.kareki, kadogu: s.kadogu, hikitori: s.hikitori,
+          weight: s.weight, vol: s.vol, code: s.code });
+      });
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+// ── 初期化 ──────────────────────────────────────────
+const loaded = loadFromStorage();
+if (!loaded) { addStop('P'); addStop('D'); }
+else renderStops();
+initCalendar();
+
+// 備考欄の変更を自動保存
+document.getElementById('offer-memo').addEventListener('input', saveToStorage);
+</script>
+</body>
+</html>
