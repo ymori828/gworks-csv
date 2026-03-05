@@ -40,8 +40,39 @@
   }
   input:focus, select:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
 
+  /* ── 便カード ── */
+  .offer-card {
+    background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 12px; overflow: hidden;
+  }
+  .offer-header {
+    padding: 12px 16px; display: flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, #0f172a, #1e3a5f);
+    cursor: pointer; user-select: none;
+  }
+  .offer-header:hover { background: linear-gradient(135deg, #1e293b, #1e40af); }
+  .offer-num-badge {
+    background: #f97316; color: #fff; font-weight: 800; font-size: 12px;
+    padding: 3px 10px; border-radius: 6px; letter-spacing: 0.5px; flex-shrink: 0;
+  }
+  .offer-summary { font-size: 11px; color: #94a3b8; margin-left: 4px; }
+  .offer-toggle { color: #94a3b8; font-size: 18px; margin-left: auto; transition: transform 0.2s; flex-shrink: 0; }
+  .offer-toggle.open { transform: rotate(180deg); }
+  .btn-del-offer {
+    padding: 4px 10px; background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; font-family: inherit;
+    flex-shrink: 0; transition: background 0.12s;
+  }
+  .btn-del-offer:hover { background: rgba(239,68,68,0.3); }
+  .offer-body { padding: 14px 16px; display: none; }
+  .offer-body.open { display: block; }
+
+  /* 備考 */
+  .memo-field { margin-bottom: 14px; }
+  .memo-field label { font-size: 11px; font-weight: 700; color: #64748b; display: block; margin-bottom: 4px; }
+
   /* ストップカード */
-  .stop-card { border-radius: 8px; padding: 12px 14px; border-left: 4px solid; }
+  .stop-card { border-radius: 8px; padding: 12px 14px; border-left: 4px solid; margin-bottom: 2px; }
   .stop-card.pickup   { background: #fff8f0; border-color: #f97316; }
   .stop-card.delivery { background: #eff6ff; border-color: #3b82f6; }
   .stop-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
@@ -64,6 +95,15 @@
   .btn-ins:hover { opacity: 0.72; }
   .btn-ins-p { color: #f97316; border-color: #f97316; background: #fff7ed; }
   .btn-ins-d { color: #3b82f6; border-color: #3b82f6; background: #eff6ff; }
+
+  /* ＋ オファー追加ボタン */
+  .btn-add-offer {
+    width: 100%; padding: 13px; background: transparent;
+    border: 2px dashed #cbd5e1; border-radius: 12px; cursor: pointer;
+    color: #64748b; font-size: 14px; font-weight: 700; font-family: inherit;
+    transition: all 0.15s; margin-bottom: 14px;
+  }
+  .btn-add-offer:hover { border-color: #f97316; color: #f97316; background: #fff7ed; }
 
   /* カレンダー */
   .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
@@ -90,6 +130,33 @@
   .date-list-header { padding: 9px 14px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; }
   .btn-clear-all { padding: 3px 10px; background: transparent; border: 1px solid #fecaca; border-radius: 5px; cursor: pointer; color: #ef4444; font-size: 11px; font-weight: 600; font-family: inherit; }
 
+  /* CSV件数バッジ */
+  #csv-preview { font-size: 11px; color: #64748b; padding: 0 4px; }
+
+  /* ── カスタムモーダル ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.15s;
+  }
+  .modal-overlay.active { opacity: 1; pointer-events: all; }
+  .modal-box {
+    background: #fff; border-radius: 16px; padding: 28px 28px 20px;
+    max-width: 380px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    transform: scale(0.92); transition: transform 0.15s;
+  }
+  .modal-overlay.active .modal-box { transform: scale(1); }
+  .modal-icon { font-size: 32px; margin-bottom: 10px; text-align: center; }
+  .modal-title { font-weight: 800; font-size: 16px; color: #1e293b; text-align: center; margin-bottom: 8px; }
+  .modal-msg { font-size: 13px; color: #64748b; text-align: center; line-height: 1.6; margin-bottom: 20px; }
+  .modal-btns { display: flex; gap: 10px; }
+  .modal-btn { flex: 1; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; font-size: 14px; font-family: inherit; transition: opacity 0.12s; }
+  .modal-btn:hover { opacity: 0.82; }
+  .modal-btn-cancel { background: #f1f5f9; color: #64748b; }
+  .modal-btn-ok { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
+  .modal-btn-ok.blue { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+  .modal-btn-ok.orange { background: linear-gradient(135deg, #f97316, #ea580c); }
+
   @media (max-width: 768px) {
     .main { grid-template-columns: 1fr; }
     .stop-row2 { grid-template-columns: 1fr 1fr; }
@@ -108,33 +175,15 @@
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
     <div id="badge-count">📅 <span id="count-num">0</span>日選択中</div>
+    <span id="csv-preview"></span>
     <button id="btn-download" onclick="downloadCSV()">⬇ CSVダウンロード</button>
   </div>
 </header>
 
 <div class="main">
   <div>
-    <!-- 備考 -->
-    <div class="card">
-      <div class="card-header orange">📝 備考（共通）</div>
-      <div class="card-body">
-        <div class="field">
-          <label>備考</label>
-          <input type="text" id="offer-memo" placeholder="配送時の注意事項、軒先情報、必要器具など">
-        </div>
-      </div>
-    </div>
-
-    <!-- 集荷・配送先 -->
-    <div class="card">
-      <div class="card-header purple">
-        🗺 集荷・配送先
-        <button onclick="clearTemplate()" style="margin-left:auto;padding:4px 12px;background:#fee2e2;color:#ef4444;border:1px solid #fecaca;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">テンプレートをクリア</button>
-      </div>
-      <div class="card-body">
-        <div id="stops-container"></div>
-      </div>
-    </div>
+    <div id="offers-container"></div>
+    <button class="btn-add-offer" onclick="addOffer()">＋ オファーを追加</button>
   </div>
 
   <div>
@@ -152,14 +201,28 @@
   </div>
 </div>
 
+<!-- カスタムモーダル -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-icon" id="modal-icon">⚠️</div>
+    <div class="modal-title" id="modal-title">確認</div>
+    <div class="modal-msg" id="modal-msg"></div>
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-cancel" id="modal-cancel">キャンセル</button>
+      <button class="modal-btn modal-btn-ok" id="modal-ok">削除する</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const WEEKDAYS = ['日','月','火','水','木','金','土'];
 const 荷役_P   = ['無し','手積み','フォークリフト'];
 const 荷役_D   = ['無し','手卸し','フォークリフト'];
 const 荷姿LIST  = ['パレット','バラ','その他'];
 
-let stops = [];
+let offers = [];
 let selectedDates = [];
+let offerIdCounter = 0;
 let stopIdCounter = 0;
 let calYear, calMonth;
 
@@ -169,109 +232,232 @@ function daysInMonth(y,m) { return new Date(y,m,0).getDate(); }
 function firstDow(y,m) { return new Date(y,m-1,1).getDay(); }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-// ── ストップ ────────────────────────────────────────
+// ── モーダル ─────────────────────────────────────────
+function showModal({ icon='⚠️', title='確認', msg, okLabel='削除する', okClass='', onOk, onCancel }) {
+  document.getElementById('modal-icon').textContent = icon;
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-msg').textContent = msg;
+  const btnOk = document.getElementById('modal-ok');
+  const btnCa = document.getElementById('modal-cancel');
+  btnOk.textContent = okLabel;
+  btnOk.className = 'modal-btn modal-btn-ok' + (okClass ? ' ' + okClass : '');
+  const overlay = document.getElementById('modal-overlay');
+  overlay.classList.add('active');
+  const close = () => overlay.classList.remove('active');
+  btnOk.onclick = () => { close(); onOk && onOk(); };
+  btnCa.onclick = () => { close(); onCancel && onCancel(); };
+}
 
+function showAlert({ icon='ℹ️', title='お知らせ', msg, okLabel='OK', okClass='orange' }) {
+  document.getElementById('modal-icon').textContent = icon;
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-msg').textContent = msg;
+  const btnOk = document.getElementById('modal-ok');
+  const btnCa = document.getElementById('modal-cancel');
+  btnOk.textContent = okLabel;
+  btnOk.className = 'modal-btn modal-btn-ok' + (okClass ? ' ' + okClass : '');
+  btnCa.style.display = 'none';
+  const overlay = document.getElementById('modal-overlay');
+  overlay.classList.add('active');
+  btnOk.onclick = () => { overlay.classList.remove('active'); btnCa.style.display = ''; };
+  btnCa.onclick = () => { overlay.classList.remove('active'); btnCa.style.display = ''; };
+}
+
+// ── オファー ─────────────────────────────────────────
 function makeStop(type) {
-  return { id: ++stopIdCounter, type, name:'', time: type==='P' ? '09:00' : '14:00', kareki:'無し', kadogu:'パレット', hikitori:false, weight:'', vol:'', code:'' };
+  return { id: ++stopIdCounter, type, name:'', time: type==='P' ? '09:00' : '14:00',
+           kareki:'無し', kadogu:'パレット', hikitori:false, weight:'', vol:'', code:'' };
 }
 
-function addStop(type, afterIndex) {
+function addOffer() {
+  const id = ++offerIdCounter;
+  const num = offers.length + 1;
+  offers.push({ id, memo: '', collapsed: false, stops: [makeStop('P'), makeStop('D')] });
+  renderOffers();
+  saveToStorage();
+}
+
+function removeOffer(id) {
+  if (offers.length <= 1) {
+    showAlert({ icon:'⚠️', title:'削除できません', msg:'オファーは最低1件必要です。' });
+    return;
+  }
+  const o = offers.find(o => o.id === id);
+  showModal({
+    icon: '🗑️', title: 'オファーを削除', msg: `このオファーを削除します。よろしいですか？`,
+    okLabel: '削除する',
+    onOk: () => {
+      offers = offers.filter(o => o.id !== id);
+      renderOffers(); saveToStorage();
+    }
+  });
+}
+
+function toggleOffer(id) {
+  const o = offers.find(o => o.id === id);
+  if (o) { o.collapsed = !o.collapsed; renderOffers(); }
+}
+
+
+function updateOfferMemo(id, val) {
+  const o = offers.find(o => o.id === id);
+  if (o) { o.memo = val; saveToStorage(); }
+}
+
+
+// ── ストップ ─────────────────────────────────────────
+function addStop(offerId, type, afterIndex) {
+  const o = offers.find(o => o.id === offerId);
+  if (!o) return;
   const s = makeStop(type);
-  if (afterIndex === undefined || afterIndex >= stops.length) stops.push(s);
-  else stops.splice(afterIndex + 1, 0, s);
-  renderStops();
-  saveToStorage();
+  if (afterIndex === undefined || afterIndex >= o.stops.length) o.stops.push(s);
+  else o.stops.splice(afterIndex + 1, 0, s);
+  renderOffers(); saveToStorage();
 }
 
-function removeStop(id) {
-  if (stops.length <= 2) { alert('最低2件（集荷1・配送1）必要です'); return; }
-  stops = stops.filter(s => s.id !== id);
-  renderStops();
-  saveToStorage();
+function removeStop(offerId, stopId) {
+  const o = offers.find(o => o.id === offerId);
+  if (!o) return;
+  if (o.stops.length <= 2) {
+    showAlert({ icon:'⚠️', title:'削除できません', msg:'最低2件（集荷1・配送1）必要です。' });
+    return;
+  }
+  showModal({
+    icon: '🗑️', title: 'ストップを削除',
+    msg: 'このストップを削除します。よろしいですか？',
+    okLabel: '削除する',
+    onOk: () => {
+      o.stops = o.stops.filter(s => s.id !== stopId);
+      renderOffers(); saveToStorage();
+    }
+  });
 }
 
-function updateStop(id, field, value) {
-  const s = stops.find(s => s.id === id);
+function updateStop(offerId, stopId, field, value) {
+  const o = offers.find(o => o.id === offerId);
+  if (!o) return;
+  const s = o.stops.find(s => s.id === stopId);
   if (s) { s[field] = value; saveToStorage(); }
 }
 
-function renderStops() {
-  const container = document.getElementById('stops-container');
+// ── レンダリング ───────────────────────────────────────
+function renderOffers() {
+  const container = document.getElementById('offers-container');
   container.innerHTML = '';
+  offers.forEach((offer, oidx) => {
+    const card = document.createElement('div');
+    card.className = 'offer-card';
+    const ps = offer.stops.filter(s=>s.type==='P').length;
+    const ds = offer.stops.filter(s=>s.type==='D').length;
+    const summary = `集荷${ps}・配送${ds}`;
 
-  stops.forEach((s, idx) => {
+    card.innerHTML = `
+      <div class="offer-header" onclick="toggleOffer(${offer.id})">
+        <span class="offer-num-badge">オファー ${oidx+1}</span>
+        <span class="offer-summary" id="offer-summary-${offer.id}">${summary}</span>
+        ${offers.length > 1 ? `<button class="btn-del-offer" onclick="event.stopPropagation(); removeOffer(${offer.id})">削除</button>` : ''}
+        <span class="offer-toggle ${offer.collapsed ? '' : 'open'}">▾</span>
+      </div>
+      <div class="offer-body ${offer.collapsed ? '' : 'open'}" id="offer-body-${offer.id}">
+        <div class="memo-field">
+          <label>📝 備考</label>
+          <input type="text" value="${esc(offer.memo)}"
+            placeholder="配送時の注意事項、軒先情報、必要器具など"
+            oninput="updateOfferMemo(${offer.id}, this.value)">
+        </div>
+        <div id="stops-${offer.id}"></div>
+      </div>
+    `;
+    container.appendChild(card);
+    renderStops(offer);
+  });
+  updateCsvPreview();
+}
+
+function renderStops(offer) {
+  const container = document.getElementById(`stops-${offer.id}`);
+  if (!container) return;
+  container.innerHTML = '';
+  offer.stops.forEach((s, idx) => {
     const isP = s.type === 'P';
     const 荷役opts = isP ? 荷役_P : 荷役_D;
-
-    // ストップカード
     const card = document.createElement('div');
     card.className = `stop-card ${isP ? 'pickup' : 'delivery'}`;
     card.innerHTML = `
       <div class="stop-header">
         <span class="stop-badge ${isP?'p':'d'}">${isP ? '集荷 P' : '配送 D'}</span>
         <span class="stop-index">${idx+1}ヶ所目</span>
-        <button class="btn-remove-stop" onclick="removeStop(${s.id})">削除</button>
+        <button class="btn-remove-stop" onclick="removeStop(${offer.id},${s.id})">削除</button>
       </div>
       <div class="stop-row1">
         <div class="field">
           <label>営業所名・会社名</label>
-          <input type="text" placeholder="例：しみず物流株式会社" value="${esc(s.name)}" oninput="updateStop(${s.id},'name',this.value)">
+          <input type="text" placeholder="例：しみず物流株式会社" value="${esc(s.name)}"
+            oninput="updateStop(${offer.id},${s.id},'name',this.value)">
         </div>
         <div class="field">
           <label>時刻</label>
-          <input type="time" value="${s.time}" oninput="updateStop(${s.id},'time',this.value)">
+          <input type="time" value="${s.time}" oninput="updateStop(${offer.id},${s.id},'time',this.value)">
         </div>
       </div>
       <div class="stop-row2">
         <div class="field">
           <label>荷役</label>
-          <select onchange="updateStop(${s.id},'kareki',this.value)">
+          <select onchange="updateStop(${offer.id},${s.id},'kareki',this.value)">
             ${荷役opts.map(o=>`<option${s.kareki===o?' selected':''}>${esc(o)}</option>`).join('')}
           </select>
         </div>
         <div class="field">
           <label>荷姿</label>
-          <select onchange="updateStop(${s.id},'kadogu',this.value)">
+          <select onchange="updateStop(${offer.id},${s.id},'kadogu',this.value)">
             ${荷姿LIST.map(o=>`<option${s.kadogu===o?' selected':''}>${esc(o)}</option>`).join('')}
           </select>
         </div>
         <div class="field">
           <label>総重量 (kg)</label>
-          <input type="number" placeholder="0" value="${esc(s.weight)}" style="text-align:right" oninput="updateStop(${s.id},'weight',this.value)">
+          <input type="number" placeholder="0" value="${esc(s.weight)}" style="text-align:right"
+            oninput="updateStop(${offer.id},${s.id},'weight',this.value)">
         </div>
         <div class="field">
           <label>総立米 (m³)</label>
-          <input type="number" placeholder="0" value="${esc(s.vol)}" style="text-align:right" oninput="updateStop(${s.id},'vol',this.value)">
+          <input type="number" placeholder="0" value="${esc(s.vol)}" style="text-align:right"
+            oninput="updateStop(${offer.id},${s.id},'vol',this.value)">
         </div>
         <div class="field">
           <label>品番・コード</label>
-          <input type="text" placeholder="0001" value="${esc(s.code)}" oninput="updateStop(${s.id},'code',this.value)">
+          <input type="text" placeholder="0001" value="${esc(s.code)}"
+            oninput="updateStop(${offer.id},${s.id},'code',this.value)">
         </div>
       </div>
       <div class="stop-row3">
         <label class="checkbox-label">
-          <input type="checkbox" ${s.hikitori?'checked':''} onchange="updateStop(${s.id},'hikitori',this.checked)">
+          <input type="checkbox" ${s.hikitori?'checked':''} onchange="updateStop(${offer.id},${s.id},'hikitori',this.checked)">
           引取あり（集荷先へ持ち帰りがある場合）
         </label>
       </div>
     `;
     container.appendChild(card);
 
-    // カードの後に挿入ボタン行
     const row = document.createElement('div');
     row.className = 'insert-row';
     row.innerHTML = `
       <div class="insert-btns">
-        <button class="btn-ins btn-ins-p" onclick="addStop('P',${idx})">＋ 集荷先を追加</button>
-        <button class="btn-ins btn-ins-d" onclick="addStop('D',${idx})">＋ 配送先を追加</button>
+        <button class="btn-ins btn-ins-p" onclick="addStop(${offer.id},'P',${idx})">＋ 集荷先を追加</button>
+        <button class="btn-ins btn-ins-d" onclick="addStop(${offer.id},'D',${idx})">＋ 配送先を追加</button>
       </div>
     `;
     container.appendChild(row);
   });
 }
 
-// ── カレンダー ──────────────────────────────────────
+function updateCsvPreview() {
+  const el = document.getElementById('csv-preview');
+  if (!el) return;
+  const total = selectedDates.length * offers.length;
+  el.textContent = total > 0 ? `${total}件生成予定` : '';
+}
 
+// ── カレンダー ──────────────────────────────────────
 function initCalendar() {
   const t = new Date();
   calYear = t.getFullYear(); calMonth = t.getMonth() + 1;
@@ -331,7 +517,7 @@ function toggleDate(key) {
   const idx = selectedDates.indexOf(key);
   if (idx >= 0) selectedDates.splice(idx, 1); else selectedDates.push(key);
   selectedDates.sort();
-  renderCalendar(); renderDateList(); updateBadge();
+  renderCalendar(); renderDateList(); updateBadge(); updateCsvPreview();
 }
 
 function selectWeekdays() {
@@ -344,16 +530,16 @@ function selectWeekdays() {
     const k = dateKey(calYear,calMonth,d);
     if (dow!==0 && dow!==6 && k >= todayKey && !selectedDates.includes(k)) selectedDates.push(k);
   }
-  selectedDates.sort(); renderCalendar(); renderDateList(); updateBadge();
+  selectedDates.sort(); renderCalendar(); renderDateList(); updateBadge(); updateCsvPreview();
 }
 
 function clearMonth() {
   const days = daysInMonth(calYear, calMonth);
   for (let d=1; d<=days; d++) selectedDates = selectedDates.filter(k => k !== dateKey(calYear,calMonth,d));
-  renderCalendar(); renderDateList(); updateBadge();
+  renderCalendar(); renderDateList(); updateBadge(); updateCsvPreview();
 }
 
-function clearAllDates() { selectedDates=[]; renderCalendar(); renderDateList(); updateBadge(); }
+function clearAllDates() { selectedDates=[]; renderCalendar(); renderDateList(); updateBadge(); updateCsvPreview(); }
 
 function renderDateList() {
   const card = document.getElementById('date-list-card');
@@ -377,7 +563,6 @@ function updateBadge() {
 }
 
 // ── CSV ─────────────────────────────────────────────
-
 function buildDT(dateStr, timeStr) {
   if (!dateStr || !timeStr) return '';
   const [y,mo,d] = dateStr.split('-'); const [h,mi] = timeStr.split(':');
@@ -390,21 +575,27 @@ function csvCell(v) {
 }
 
 function downloadCSV() {
-  if (!selectedDates.length) { alert('日付を1日以上選択してください'); return; }
-  const memo = document.getElementById('offer-memo').value;
+  if (!selectedDates.length) {
+    showAlert({ icon:'📅', title:'日付未選択', msg:'日付を1日以上選択してください。' });
+    return;
+  }
   const rows = [['No','備考','集荷/配送','集荷配送先営業所名','集荷配送日時','荷役','荷姿','引取','総重量','総立米','品番・コード']];
 
-  selectedDates.forEach((dateStr, i) => {
-    stops.forEach((s, si) => {
-      rows.push([
-        si===0 ? i+1 : '',
-        si===0 ? memo : '',
-        s.type, s.name,
-        buildDT(dateStr, s.time),
-        s.kareki, s.kadogu,
-        s.hikitori ? '有り' : '',
-        s.weight, s.vol, s.code,
-      ]);
+  let no = 0;
+  selectedDates.forEach(dateStr => {
+    offers.forEach(offer => {
+      no++;
+      offer.stops.forEach((s, si) => {
+        rows.push([
+          si === 0 ? no : '',
+          si === 0 ? offer.memo : '',
+          s.type, s.name,
+          buildDT(dateStr, s.time),
+          s.kareki, s.kadogu,
+          s.hikitori ? '有り' : '',
+          s.weight, s.vol, s.code,
+        ]);
+      });
     });
   });
 
@@ -415,43 +606,54 @@ function downloadCSV() {
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
 
-// ── localStorage 保存・読み込み ──────────────────────
-
-function clearTemplate() {
-  if (!confirm('集荷・配送先の入力内容をすべてクリアします。よろしいですか？')) return;
-  stops = [];
-  stopIdCounter = 0;
-  addStop('P');
-  addStop('D');
-  localStorage.removeItem('gworks_offer_template');
-}
-
+// ── localStorage ──────────────────────────────────────
 function saveToStorage() {
   const data = {
-    memo: document.getElementById('offer-memo').value,
-    stops: stops.map(s => ({
-      type: s.type, name: s.name, time: s.time,
-      kareki: s.kareki, kadogu: s.kadogu, hikitori: s.hikitori,
-      weight: s.weight, vol: s.vol, code: s.code,
+    version: 2,
+    offers: offers.map(o => ({
+      id: o.id, memo: o.memo, collapsed: o.collapsed,
+      stops: o.stops.map(s => ({
+        type: s.type, name: s.name, time: s.time,
+        kareki: s.kareki, kadogu: s.kadogu, hikitori: s.hikitori,
+        weight: s.weight, vol: s.vol, code: s.code,
+      }))
     }))
   };
-  localStorage.setItem('gworks_offer_template', JSON.stringify(data));
+  localStorage.setItem('gworks_offers_v2', JSON.stringify(data));
 }
 
 function loadFromStorage() {
   try {
-    const raw = localStorage.getItem('gworks_offer_template');
-    if (!raw) return false;
-    const data = JSON.parse(raw);
-    if (data.memo) document.getElementById('offer-memo').value = data.memo;
-    if (data.stops && data.stops.length >= 2) {
-      stops = [];
-      data.stops.forEach(s => {
-        stops.push({ id: ++stopIdCounter, type: s.type, name: s.name, time: s.time,
+    // v2形式を試みる
+    const raw2 = localStorage.getItem('gworks_offers_v2');
+    if (raw2) {
+      const data = JSON.parse(raw2);
+      if (data.offers && data.offers.length > 0) {
+        offers = [];
+        data.offers.forEach(o => {
+          const stops = (o.stops || []).map(s => ({
+            id: ++stopIdCounter, type: s.type, name: s.name, time: s.time,
+            kareki: s.kareki, kadogu: s.kadogu, hikitori: s.hikitori,
+            weight: s.weight, vol: s.vol, code: s.code,
+          }));
+          offers.push({ id: ++offerIdCounter, memo: o.memo||'', collapsed: o.collapsed||false, stops });
+        });
+        return true;
+      }
+    }
+    // v1形式（旧バージョン互換）
+    const raw1 = localStorage.getItem('gworks_offer_template');
+    if (raw1) {
+      const data = JSON.parse(raw1);
+      if (data.stops && data.stops.length >= 2) {
+        const stops = data.stops.map(s => ({
+          id: ++stopIdCounter, type: s.type, name: s.name, time: s.time,
           kareki: s.kareki, kadogu: s.kadogu, hikitori: s.hikitori,
-          weight: s.weight, vol: s.vol, code: s.code });
-      });
-      return true;
+          weight: s.weight, vol: s.vol, code: s.code,
+        }));
+        offers = [{ id: ++offerIdCounter, name: '便1', memo: data.memo||'', collapsed: false, stops }];
+        return true;
+      }
     }
   } catch(e) {}
   return false;
@@ -459,12 +661,9 @@ function loadFromStorage() {
 
 // ── 初期化 ──────────────────────────────────────────
 const loaded = loadFromStorage();
-if (!loaded) { addStop('P'); addStop('D'); }
-else renderStops();
+if (!loaded) { addOffer(); }
+else renderOffers();
 initCalendar();
-
-// 備考欄の変更を自動保存
-document.getElementById('offer-memo').addEventListener('input', saveToStorage);
 </script>
 </body>
 </html>
